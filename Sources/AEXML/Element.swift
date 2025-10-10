@@ -263,39 +263,39 @@ open class AEXMLElement {
         
         // open element
         if AEXMLElement.addFormattingSeparator {
-            xml += indent(withDepth: parentsCount - 1)
+            xml.append(indent(withDepth: parentsCount - 1))
         }
-        xml += "<\(name)"
+        xml.append("<\(name)")
         
         if attributes.count > 0 {
             // insert attributes
             for (key, value) in attributes.sorted(by: { $0.key < $1.key }) {
-                xml += " \(key)=\"\(value.xmlEscaped)\""
+                xml.append(" \(key)=\"\(value.xmlEscaped)\"")
             }
         }
         
         if value == nil && children.count == 0 {
             // close element
-            xml += " />"
+            xml.append(" />")
         } else {
             if children.count > 0 {
                 // add children
-                xml += AEXMLElement.addFormattingSeparator ? ">\n" : ">"
+                xml.append(AEXMLElement.addFormattingSeparator ? ">\n" : ">")
                 for child in children {
                     if AEXMLElement.addFormattingSeparator {
-                        xml += "\(child.xml)\n"
+                        xml.append("\(child.xml)\n")
                     } else {
-                        xml += "\(child.xml)"
+                        xml.append("\(child.xml)")
                     }
                 }
                 // add indentation
                 if AEXMLElement.addFormattingSeparator {
-                    xml += indent(withDepth: parentsCount - 1)
+                    xml.append(indent(withDepth: parentsCount - 1))
                 }
-                xml += "</\(name)>"
+                xml.append("</\(name)>")
             } else {
                 // insert string value and close element
-                xml += ">\(string.xmlEscaped)</\(name)>"
+                xml.append(">\(string.xmlEscaped)</\(name)>")
             }
         }
         
