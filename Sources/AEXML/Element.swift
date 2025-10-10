@@ -58,6 +58,8 @@ open class AEXMLElement {
     /// Double representation of `value` property (`nil` if `value` can't be represented as Double).
     open var double: Double? { return Double(string) }
     
+    static var addFormattingSeparator = true
+    
     // MARK: - Init
     
     /**
@@ -260,7 +262,9 @@ open class AEXMLElement {
         var xml = String()
         
         // open element
-        xml += indent(withDepth: parentsCount - 1)
+        if AEXMLElement.addFormattingSeparator {
+            xml += indent(withDepth: parentsCount - 1)
+        }
         xml += "<\(name)"
         
         if attributes.count > 0 {
@@ -276,12 +280,18 @@ open class AEXMLElement {
         } else {
             if children.count > 0 {
                 // add children
-                xml += ">\n"
+                xml += AEXMLElement.addFormattingSeparator ? ">\n" : ">"
                 for child in children {
-                    xml += "\(child.xml)\n"
+                    if AEXMLElement.addFormattingSeparator {
+                        xml += "\(child.xml)\n"
+                    } else {
+                        xml += "\(child.xml)"
+                    }
                 }
                 // add indentation
-                xml += indent(withDepth: parentsCount - 1)
+                if AEXMLElement.addFormattingSeparator {
+                    xml += indent(withDepth: parentsCount - 1)
+                }
                 xml += "</\(name)>"
             } else {
                 // insert string value and close element
@@ -294,8 +304,12 @@ open class AEXMLElement {
     
     /// Same as `xmlString` but without `\n` and `\t` characters
     open var xmlCompact: String {
-        let chars = CharacterSet(charactersIn: "\n\t")
-        return xml.components(separatedBy: chars).joined(separator: "")
+        let prevFlag = AEXMLElement.addFormattingSeparator
+        AEXMLElement.addFormattingSeparator = false
+        let xml = self.xml
+        AEXMLElement.addFormattingSeparator = prevFlag
+        
+        return xml
     }
     
     /// Same as `xmlString` but with 4 spaces instead of '\t' character
